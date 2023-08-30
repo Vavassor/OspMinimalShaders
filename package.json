@@ -1,0 +1,30 @@
+{
+  "author": {
+    "email": "dawso.andrew@gmail.com",
+    "name": "Andrew Dawson",
+    "url": "https://vavassor.github.io/"
+  },
+  "description": "Shaders styled like 5th and 6th generation game consoles.",
+  "displayName": "OSP Minimal Shaders",
+  "keywords": [
+    "graphics",
+    "n64",
+    "ps1",
+    "retro",
+    "shaders"
+  ],
+  "license": "MIT",
+  "name": "com.orchidseal.minimalshaders",
+  "samples": [
+    {
+      "displayName": "N64 Demo",
+      "description": "Demo with Nintendo 64 style graphics.",
+      "path": "Samples~/N64 Demo"
+    }
+  ],
+  "unity": "2019.4",
+  "unityRelease": "31f1",
+  "url": "https://github.com/Vavassor/OspMinimalShaders/releases/downloads/v0.1.0/com.orchidseal.minimalshaders-0.1.0.zip",
+  "version": "0.1.0",
+  "vrchatVersion": "2023.3.1"
+}
