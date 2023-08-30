@@ -1,4 +1,4 @@
-﻿Shader "OSP Minimal/Particle"
+﻿Shader "OSP Minimal/Billboard"
 {
 	Properties
 	{

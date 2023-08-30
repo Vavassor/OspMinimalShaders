@@ -1,5 +1,5 @@
 ﻿// A per-vertex lighting shader that supports vertex lightmaps and a light source fixed to the camera.
-Shader "OSP Minimal/VertexLit"
+Shader "OSP Minimal/Vertex Lit"
 {
     Properties
     {
@@ -367,8 +367,6 @@ Shader "OSP Minimal/VertexLit"
             CGPROGRAM
 
             #include "UnityStandardMeta.cginc"
-
-            float4 _SpecColor;
 
             float4 frag_meta2(v2f_meta i) : SV_Target
             {

@@ -209,8 +209,8 @@ Shader "OSP Minimal/Vertex Lightmapped"
         {
             Tags { "LightMode" = "ForwardAdd" }
 
-            // additive blending
-            Blend One One
+            // multiplicative blending
+            Blend DstColor Zero
 
             CGPROGRAM
 
@@ -221,10 +221,6 @@ Shader "OSP Minimal/Vertex Lightmapped"
 
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"
-
-            uniform float4 _Color;
-            UNITY_DECLARE_TEX2D(_MainTex);
-            float4 _MainTex_ST;
 
             struct vertexInput
             {
@@ -237,7 +233,6 @@ Shader "OSP Minimal/Vertex Lightmapped"
             struct vertexOutput
             {
                 float4 pos : SV_POSITION;
-                float2 texcoord : TEXCOORD0;
                 SHADOW_COORDS(2)
                 UNITY_FOG_COORDS(3)
                 UNITY_VERTEX_OUTPUT_STEREO
@@ -251,7 +246,6 @@ Shader "OSP Minimal/Vertex Lightmapped"
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
                 output.pos = UnityObjectToClipPos(v.vertex);
-                output.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
 
                 TRANSFER_SHADOW(output)
                 UNITY_TRANSFER_FOG(output, output.pos);
@@ -263,9 +257,9 @@ Shader "OSP Minimal/Vertex Lightmapped"
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-                float3 albedo = _Color.rgb * UNITY_SAMPLE_TEX2D(_MainTex, input.texcoord).rgb;
+                float3 ambientLighting = UNITY_LIGHTMODEL_AMBIENT.rgb;
                 fixed shadow = SHADOW_ATTENUATION(input);
-                fixed4 col = fixed4(albedo * shadow, 1.0);
+                fixed4 col = fixed4(shadow.xxx, 1.0);
 
                 UNITY_APPLY_FOG_COLOR(input.fogCoord, col, fixed4(0, 0, 0, 0));
 
