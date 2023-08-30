@@ -4,7 +4,7 @@ OSP Minimal shaders are GPU programs for retro graphics in [Unity game engine](h
 
 ## Getting Started
 
-Download the [latest Unity Package](https://github.com/vavassor/OspMinimalShaders/releases/latest) and import the package into your Unity project.
+Download the [latest Unity Package](https://github.com/vavassor/OspMinimalShaders/releases/latest) and follow the directions for [importing local asset packages](https://docs.unity3d.com/2023.1/Documentation/Manual/AssetPackagesImport.html) into your Unity project.
 
 ## License
 
