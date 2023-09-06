@@ -9,7 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: N64 Demo Water
   m_Shader: {fileID: 4800000, guid: 5494192ad887b8849bbd19bd39234978, type: 3}
-  m_ShaderKeywords: USE_GAMMA_SPACE USE_MULTITEXTURING _VERTEXCOLORMODE_NONE
+  m_ShaderKeywords: RECEIVE_SHADOWS USE_DETAIL_TEXTURE USE_FOG USE_GAMMA_COLORSPACE
+    USE_GAMMA_SPACE USE_MULTITEXTURING _VERTEXCOLORMODE_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -35,13 +36,25 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _DetailTexture:
+        m_Texture: {fileID: 2800000, guid: d8ef539c1867c6f459934e02af5d9fcc, type: 3}
+        m_Scale: {x: 5, y: 5}
+        m_Offset: {x: 0, y: 0}
     - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FlipbookTexArray:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: d8ef539c1867c6f459934e02af5d9fcc, type: 3}
         m_Scale: {x: 6, y: 6}
+        m_Offset: {x: 0, y: 0}
+    - _MatcapTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
@@ -60,36 +73,61 @@ Material:
         m_Scale: {x: 6, y: 6}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _AffineDistortion: 1
     - _AlphaCutoff: 0.5
     - _BlendOp: 0
     - _BumpScale: 1
     - _CombineBlend: 0.5
     - _Cull: 0
     - _Cutoff: 0.5
+    - _DetailBlendStrengthMode: 0
     - _DetailNormalMapScale: 1
+    - _DetailTextureBlend: 0.5
+    - _DetailTextureBlendBy: 0
+    - _DetailTextureBlendMode: 0
     - _DstBlend: 10
+    - _FlipbookBlendMode: 0
+    - _FlipbookFramesPerSecond: 30
+    - _FlipbookManualFrame: 0
+    - _FlipbookUseManualFrame: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _MatcapTextureBlend: 1
+    - _MatcapTextureBlendMode: 0
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _OffsetFactor: 0
     - _OffsetUnits: 0
     - _Parallax: 0.02
+    - _PolygonJitter: 1
+    - _ShouldReceiveShadows: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 5
     - _UVSec: 0
+    - _UseAffineMapping: 0
     - _UseAlphaTest: 0
+    - _UseDetailTexture: 1
+    - _UseFlipbook: 0
+    - _UseFog: 1
     - _UseGammaSpace: 1
+    - _UseMatcap: 0
     - _UseMultitexturing: 1
+    - _UsePolygonJitter: 0
     - _VertexColorMode: 0
     - _ZTest: 4
     - _ZWrite: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 0.4}
+    - _DetailTextureScrollVelocity: {r: -0.02, g: 0.02, b: 0, a: 0}
+    - _DetailTextureTint: {r: 1, g: 1, b: 1, a: 0.4}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FlipbookScrollVelocity: {r: 0, g: 0, b: 0, a: 0}
+    - _FlipbookTint: {r: 1, g: 1, b: 1, a: 1}
+    - _MatcapTextureTint: {r: 1, g: 1, b: 1, a: 1}
+    - _MatcapTexturetint: {r: 1, g: 1, b: 1, a: 1}
     - _ScrollVelocity: {r: 0.05, g: 0.03, b: 0, a: 0}
     - _Texture2Color: {r: 1, g: 1, b: 1, a: 0.4}
     - _Texture2ScrollVelocity: {r: -0.02, g: 0.04, b: 0, a: 0}

@@ -10,7 +10,7 @@ Shader "OSP Minimal/Vertex Lit"
        [Toggle(USE_GAMMA_SPACE)] _UseGammaSpace("Use Gamma Space Blending", Float) = 0
 
        [Header(Fixed Light)]
-       [Toggle(USE_FIXED_LIGHT)] _UseFixedLight("Fixed Light (Not recommended for VR)", Float) = 0
+       [Toggle(USE_FIXED_LIGHT)] _UseFixedLight("Fixed Light", Float) = 0
        _FixedAmbientColor("Ambient Color", Color) = (0.5, 0.5, 0.5, 1.0)
        _FixedLightColor("Light Color", Color) = (1.0, 1.0, 1.0, 1.0)
        // The default is Mario 64 light direction. https://forum.unity.com/threads/fake-shadows-in-shader.1276139/#post-8098937
@@ -336,27 +336,7 @@ Shader "OSP Minimal/Vertex Lit"
             #pragma multi_compile_instancing
 
             #include "UnityCG.cginc"
-
-            struct v2f
-            {
-                V2F_SHADOW_CASTER;
-                UNITY_VERTEX_OUTPUT_STEREO
-            };
-
-            v2f vert(appdata_base v)
-            {
-                v2f o;
-                UNITY_SETUP_INSTANCE_ID(v);
-                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
-                return o;
-            }
-
-            float4 frag(v2f i) : SV_Target
-            {
-                SHADOW_CASTER_FRAGMENT(i)
-            }
-
+            #include "ShadowCaster.cginc"
             ENDCG
         }
         Pass
