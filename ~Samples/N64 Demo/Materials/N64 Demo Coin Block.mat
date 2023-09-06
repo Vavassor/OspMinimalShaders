@@ -112,6 +112,7 @@ Material:
     - _UseAlphaTest: 1
     - _UseDetailTexture: 0
     - _UseFlipbook: 1
+    - _UseFlipbookSmoothing: 0
     - _UseFog: 1
     - _UseGammaSpace: 1
     - _UseMatcap: 0

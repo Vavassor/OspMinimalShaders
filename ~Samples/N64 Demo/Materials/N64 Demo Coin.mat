@@ -9,7 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: N64 Demo Coin
   m_Shader: {fileID: 4800000, guid: 5f4e81c6342c52d42be6a395658840fe, type: 3}
-  m_ShaderKeywords: USE_ALPHA_TEST USE_FLIPBOOK USE_GAMMA_COLORSPACE _COLORMODE_MULTIPLY
+  m_ShaderKeywords: STAY_UPRIGHT USE_ALPHA_TEST USE_FLIPBOOK USE_GAMMA_COLORSPACE
+    _COLORMODE_MULTIPLY
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
