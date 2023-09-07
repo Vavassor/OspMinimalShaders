@@ -60,7 +60,7 @@ namespace OrchidSeal.MinimalShaders.Editor
 		private GUIContent blendOperationLabel = new GUIContent("Blend Operation");
 		private GUIContent zTestLabel = new GUIContent("Depth Test");
 		private GUIContent zWriteLabel = new GUIContent("Depth Write");
-		private GUIContent useGammaSpaceLabel = new GUIContent("Use Gamma Space Blending");
+		private GUIContent useGammaSpaceLabel = new GUIContent("Use Gamma Space Blending", "Perform shader calculations in gamma space. Blending with the framebuffer will still follow the color space workflow in project settings.");
 
 		// Base option labels
 		private string baseFoldoutLabel = "Base";

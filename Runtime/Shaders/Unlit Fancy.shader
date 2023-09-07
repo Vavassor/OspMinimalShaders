@@ -8,7 +8,7 @@ Shader "OSP Minimal/Unlit Fancy"
         _Color("Tint", Color) = (1,1,1,1)
         _ScrollVelocity("Scroll Velocity", Vector) = (0, 0, 0, 0)
         [Toggle(USE_GAMMA_COLORSPACE)] _UseGammaSpace("Use Gamma Space Blending", Float) = 1
-        [KeywordEnum(None, Custom, Bakery Lightmaps)] _VertexColorMode("Vertex Color Mode", Float) = 0
+        [KeywordEnum(None, Multiply, Bakery Lightmaps)] _VertexColorMode("Vertex Color Mode", Float) = 0
 
         [Toggle(USE_DETAIL_TEXTURE)] _UseDetailTexture("Enable Detail", Float) = 0
         _DetailTexture("Detail", 2D) = "white" {}

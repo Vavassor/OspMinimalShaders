@@ -82,13 +82,13 @@ namespace OrchidSeal.MinimalShaders.Editor
         private GUIContent blendOperationLabel = new GUIContent("Blend Operation");
         private GUIContent zTestLabel = new GUIContent("Depth Test");
         private GUIContent zWriteLabel = new GUIContent("Depth Write");
-        private GUIContent useGammaSpaceLabel = new GUIContent("Use Gamma Space Blending");
+        private GUIContent useGammaSpaceLabel = new GUIContent("Use Gamma Space Blending", "Perform shader calculations in gamma space. Blending with the framebuffer will still follow the color space workflow in project settings.");
 
         // Base option labels
         private string baseFoldoutLabel = "Base";
         private GUIContent baseTextureLabel = new GUIContent("Base Color");
         private GUIContent baseScrollVelocityLabel = new GUIContent("Scroll Velocity");
-        private GUIContent vertexColorModeLabel = new GUIContent("Vertex Color Mode");
+        private GUIContent vertexColorModeLabel = new GUIContent("Vertex Color Mode", "None:\nDo not use vertex colors.\n\nMultiply:\nMultiply the vertex color with the base color.\n\nBakery Lightmaps:\nVertex lightmaps created by Bakery GPU Lightmapper.");
 
         // Detail option labels
         private string detailFoldoutLabel = "Detail";
@@ -119,18 +119,18 @@ namespace OrchidSeal.MinimalShaders.Editor
 
         // Effect option labels
         private string effectFoldoutLabel = "Effects";
-        private GUIContent useAffineMappingLabel = new GUIContent("Use Affine Mapping");
-        private GUIContent affineDistortionLabel = new GUIContent("Affine Distortion");
-        private GUIContent usePolygonJitterLabel = new GUIContent("Use Polygon Jitter");
-        private GUIContent polygonJitterLabel = new GUIContent("Polygone Jitter");
+        private GUIContent useAffineMappingLabel = new GUIContent("Affine Texture Mapping", "Map textures without correcting for perspective. This causes warping the more perpendicular triangles are from the camera. This type of mapping is used by the PlayStation 1.");
+        private GUIContent affineDistortionLabel = new GUIContent("Affine Distortion", "Reduce the distortion when the camera is close. Some PS1 games used dynamic tessellation to reduce warping. So this allows some of that control without needing tessellation.");
+        private GUIContent usePolygonJitterLabel = new GUIContent("Use Polygon Jitter", "Remove subpixel rasterization of triangles. This causes polygon jitter similar to games on the Nintendo DS or PlayStation 1.");
+        private GUIContent polygonJitterLabel = new GUIContent("Polygon Jitter", "The grid size in pixels to snap vertices to. A value of 1 simulates PS1 and DS behavior exactly. However, on modern high resolution displays, it may not be as visible unless you set a higher value.");
 
         // Render setting labels
         private string renderSettingsFoldoutLabel = "Render Settings";
-        private GUIContent cullLabel = new GUIContent("Cull");
+        private GUIContent cullLabel = new GUIContent("Cull", "Skip drawing polygons based on which way they're facing relative to the camera. Turn off for two-sided meshes.");
         private GUIContent useFogLabel = new GUIContent("Fog");
         private GUIContent receiveShadowsLabel = new GUIContent("Receive Shadows");
-        private GUIContent offsetFactorLabel = new GUIContent("Offset Factor");
-        private GUIContent offsetUnitsLabel = new GUIContent("Offset Units");
+        private GUIContent offsetFactorLabel = new GUIContent("Polygon Offset Factor");
+        private GUIContent offsetUnitsLabel = new GUIContent("Polygon Offset Units");
 
         private bool showBlendingOptions = true;
         private bool showBaseOptions = true;
@@ -287,8 +287,13 @@ namespace OrchidSeal.MinimalShaders.Editor
                 materialEditor.TexturePropertySingleLine(detailTextureLabel, detailTextureProperty, detailTextureTintProperty);
                 materialEditor.TextureScaleOffsetProperty(detailTextureProperty);
                 Vector2Property(detailScrollVelocityProperty, detailScrollVelocityLabel);
+
                 materialEditor.ShaderProperty(detailTextureBlendByProperty, detailTextureBlendByLabel);
-                materialEditor.ShaderProperty(detailTextureBlendProperty, detailTextureBlendLabel);
+                if (detailTextureBlendByProperty.floatValue == 0.0f)
+                {
+                    materialEditor.ShaderProperty(detailTextureBlendProperty, detailTextureBlendLabel);
+                }
+                
                 materialEditor.ShaderProperty(detailTextureBlendModeProperty, detailTextureBlendModeLabel);
 
                 EditorGUI.EndDisabledGroup();
