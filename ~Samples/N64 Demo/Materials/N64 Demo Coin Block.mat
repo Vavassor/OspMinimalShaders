@@ -9,13 +9,13 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: N64 Demo Coin Block
   m_Shader: {fileID: 4800000, guid: 5494192ad887b8849bbd19bd39234978, type: 3}
-  m_ShaderKeywords: RECEIVE_SHADOWS USE_ALPHA_TEST USE_FLIPBOOK USE_FOG USE_GAMMA_COLORSPACE
-    _VERTEXCOLORMODE_NONE
+  m_ShaderKeywords: RECEIVE_SHADOWS USE_FLIPBOOK USE_FOG USE_GAMMA_COLORSPACE _VERTEXCOLORMODE_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 2000
-  stringTagMap: {}
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -75,6 +75,8 @@ Material:
     m_Floats:
     - _AffineDistortion: 1
     - _AlphaCutoff: 0.3
+    - _AlphaToMask: 0
+    - _BlendMode: 0
     - _BlendOp: 0
     - _BumpScale: 1
     - _CombineBlend: 0.5
@@ -109,7 +111,7 @@ Material:
     - _SrcBlend: 1
     - _UVSec: 0
     - _UseAffineMapping: 0
-    - _UseAlphaTest: 1
+    - _UseAlphaTest: 0
     - _UseDetailTexture: 0
     - _UseFlipbook: 1
     - _UseFlipbookSmoothing: 0

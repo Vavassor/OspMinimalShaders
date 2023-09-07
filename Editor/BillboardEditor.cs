@@ -13,20 +13,6 @@ namespace OrchidSeal.MinimalShaders.Editor
 			Custom
         }
 
-		public enum TextureBlendMode
-        {
-			Replace,
-			Transparent,
-			Add,
-			Multiply
-		}
-
-		public enum TintColorMode
-        {
-			Multiply,
-			Overlay
-        }
-
 		// Blending properties
 		MaterialProperty blendModeProperty = null;
 		MaterialProperty useAlphaTestProperty = null;
@@ -96,6 +82,24 @@ namespace OrchidSeal.MinimalShaders.Editor
 		private string renderSettingsFoldoutLabel = "Render Settings";
 		private GUIContent stayUprightLabel = new GUIContent("Stay Upright");
 
+		override public void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
+		{
+			// Intentionally don't call the base class so that the normal settings aren't rendered.
+			// base.OnGUI(materialEditor, properties);
+
+			FindProperties(properties);
+
+			Material targetMaterial = materialEditor.target as Material;
+			string[] keywords = targetMaterial.shaderKeywords;
+
+			BlendingOptions(materialEditor, targetMaterial);
+			BaseOptions(materialEditor, targetMaterial);
+			FlipbookOptions(materialEditor, targetMaterial);
+			RenderOptions(materialEditor, targetMaterial);
+
+			materialEditor.EnableInstancingField();
+		}
+
 		private void FindProperties(MaterialProperty[] properties)
         {
 			blendModeProperty = FindProperty("_BlendMode", properties);
@@ -136,32 +140,12 @@ namespace OrchidSeal.MinimalShaders.Editor
 			}
 		}
 
-		override public void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
-        {
-			// Intentionally don't call the base class so that the normal settings aren't rendered.
-            // base.OnGUI(materialEditor, properties);
-
-			FindProperties(properties);
-
-			Material targetMaterial = materialEditor.target as Material;
-            string[] keywords = targetMaterial.shaderKeywords;
-
-			BlendingOptions(materialEditor, targetMaterial);
-			BaseOptions(materialEditor, targetMaterial);
-			FlipbookOptions(materialEditor, targetMaterial);
-			RenderOptions(materialEditor, targetMaterial);
-
-			materialEditor.EnableInstancingField();
-		}
-
 		private void BlendingOptions(MaterialEditor materialEditor, Material targetMaterial)
 		{
 			showBlendingOptions = EditorGUILayout.BeginFoldoutHeaderGroup(showBlendingOptions, blendingFoldoutLabel);
 
 			if (showBlendingOptions)
 			{
-				EditorGUILayout.Space();
-
 				EditorGUI.BeginChangeCheck();
 				materialEditor.ShaderProperty(blendModeProperty, blendModeLabel);
 				if (EditorGUI.EndChangeCheck())
@@ -195,8 +179,7 @@ namespace OrchidSeal.MinimalShaders.Editor
 				materialEditor.RenderQueueField();
 				materialEditor.ShaderProperty(useGammaSpaceProperty, useGammaSpaceLabel);
 
-				EditorGUILayout.Space();
-				EditorGUILayout.Space();
+				GUILayout.Space(20);
 			}
 
 			EditorGUILayout.EndFoldoutHeaderGroup();
@@ -208,14 +191,11 @@ namespace OrchidSeal.MinimalShaders.Editor
 
 			if (showBaseOptions)
 			{
-				EditorGUILayout.Space();
-
 				materialEditor.TexturePropertySingleLine(baseTextureLabel, baseTextureProperty, baseTextureTintProperty);
 				materialEditor.ShaderProperty(tintColorModeProperty, tintColorModeLabel);
 				materialEditor.TextureScaleOffsetProperty(baseTextureProperty);
 
-				EditorGUILayout.Space();
-				EditorGUILayout.Space();
+				GUILayout.Space(20);
 			}
 
 			EditorGUILayout.EndFoldoutHeaderGroup();
@@ -227,8 +207,6 @@ namespace OrchidSeal.MinimalShaders.Editor
 
 			if (showFlipbookOptions)
 			{
-				EditorGUILayout.Space();
-
 				materialEditor.ShaderProperty(isFlipbookEnabledProperty, isFlipbookEnabledLabel);
 
 				EditorGUI.BeginDisabledGroup(isFlipbookEnabledProperty.floatValue == 0.0f);
@@ -247,8 +225,7 @@ namespace OrchidSeal.MinimalShaders.Editor
 
 				EditorGUI.EndDisabledGroup();
 
-				EditorGUILayout.Space();
-				EditorGUILayout.Space();
+				GUILayout.Space(20);
 			}
 
 			EditorGUILayout.EndFoldoutHeaderGroup();
@@ -260,12 +237,9 @@ namespace OrchidSeal.MinimalShaders.Editor
 
 			if (showRenderOptions)
 			{
-				EditorGUILayout.Space();
-
 				materialEditor.ShaderProperty(stayUprightProperty, stayUprightLabel);
 
-				EditorGUILayout.Space();
-				EditorGUILayout.Space();
+				GUILayout.Space(20);
 			}
 
 			EditorGUILayout.EndFoldoutHeaderGroup();

@@ -139,6 +139,7 @@ Shader "OSP Minimal/Billboard"
 			v2f vert(appdata v)
 			{
 				v2f o;
+				UNITY_INITIALIZE_OUTPUT(v2f, o);
 
 				float3 cameraPositionWs = GetCenterCameraPosition();
 				float3 objectCenterWs = mul(unity_ObjectToWorld, float4(0, 0, 0, 1)).xyz;

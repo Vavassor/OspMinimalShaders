@@ -9,8 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Pathway
   m_Shader: {fileID: 4800000, guid: 5494192ad887b8849bbd19bd39234978, type: 3}
-  m_ShaderKeywords: RECEIVE_SHADOWS USE_AFFINE_MAPPING USE_DETAIL_TEXTURE USE_FOG
-    USE_GAMMA_COLORSPACE _VERTEXCOLORMODE_NONE
+  m_ShaderKeywords: RECEIVE_SHADOWS USE_DETAIL_TEXTURE USE_FOG USE_GAMMA_COLORSPACE
+    _VERTEXCOLORMODE_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -69,8 +69,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AffineDistortion: 0.44
+    - _AffineDistortion: 0.5
     - _AlphaCutoff: 0.5
+    - _AlphaToMask: 1
+    - _BlendMode: 0
     - _BlendOp: 0
     - _BumpScale: 1
     - _Cull: 2
@@ -101,7 +103,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _UseAffineMapping: 1
+    - _UseAffineMapping: 0
     - _UseAlphaTest: 0
     - _UseDetailTexture: 1
     - _UseFlipbook: 0

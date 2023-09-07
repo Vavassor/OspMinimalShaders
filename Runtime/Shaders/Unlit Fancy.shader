@@ -3,14 +3,14 @@ Shader "OSP Minimal/Unlit Fancy"
 {
     Properties
     {
+        [HideInInspector] [Enum(Opaque,0,Cutout,1,Transparent,2,Custom,3)] _BlendMode("Blending Mode", Float) = 0
         _MainTex("Albedo", 2D) = "white" {}
         _Color("Tint", Color) = (1,1,1,1)
         _ScrollVelocity("Scroll Velocity", Vector) = (0, 0, 0, 0)
         [Toggle(USE_GAMMA_COLORSPACE)] _UseGammaSpace("Use Gamma Space Blending", Float) = 1
         [KeywordEnum(None, Custom, Bakery Lightmaps)] _VertexColorMode("Vertex Color Mode", Float) = 0
 
-        [Header(Detail Texture)]
-        [Toggle(USE_DETAIL_TEXTURE)] _UseDetailTexture("Enable", Float) = 0
+        [Toggle(USE_DETAIL_TEXTURE)] _UseDetailTexture("Enable Detail", Float) = 0
         _DetailTexture("Detail", 2D) = "white" {}
         _DetailTextureTint("Tint", Color) = (1,1,1,1)
         [Enum(Strength,0,Vertex Color Red Channel,1,Vertex Color Alpha Channel,2)] _DetailTextureBlendBy("Blend By", Float) = 0
@@ -18,15 +18,13 @@ Shader "OSP Minimal/Unlit Fancy"
         [Enum(Lerp,0,Transparent,1,Add,2,Multiply,3)] _DetailTextureBlendMode("Blend Mode", Float) = 0
         _DetailTextureScrollVelocity("Scroll Velocity", Vector) = (0, 0, 0, 0)
 
-        [Header(Matcap)]
-        [Toggle(USE_MATCAP)] _UseMatcap("Enable", Float) = 0
+        [Toggle(USE_MATCAP)] _UseMatcap("Enable Matcap", Float) = 0
         [NoScaleOffset] _MatcapTexture("Matcap", 2D) = "" {}
         _MatcapTextureTint("Tint", Color) = (1,1,1,1)
         _MatcapTextureBlend("Strength", Range(0, 1)) = 1
         [Enum(Lerp,0,Transparent,1,Add,2,Multiply,3)] _MatcapTextureBlendMode("Blend Mode", Float) = 0
 
-        [Header(Flipbook)]
-        [Toggle(USE_FLIPBOOK)] _UseFlipbook("Enable", Float) = 0
+        [Toggle(USE_FLIPBOOK)] _UseFlipbook("Enable Flipbook", Float) = 0
         _FlipbookTexArray("Texture Array", 2DArray) = "" {}
         _FlipbookTint("Tint", Color) = (1,1,1,1)
         _FlipbookScrollVelocity("Scroll Velocity", Vector) = (0, 0, 0, 0)
@@ -36,28 +34,24 @@ Shader "OSP Minimal/Unlit Fancy"
         [Toggle] _FlipbookUseManualFrame("Control Frame Manually", Float) = 0
         _FlipbookManualFrame("Frame", Float) = 0
 
-        [Header(Effects)]
         [Toggle(USE_AFFINE_MAPPING)] _UseAffineMapping("Use Affine Mapping", Float) = 0
         _AffineDistortion("Affine Distortion", Range(0, 8)) = 0.5
         [Toggle(USE_POLYGON_JITTER)] _UsePolygonJitter("Use Polygon Jitter", Float) = 0
         _PolygonJitter("Polygon Jitter", Range(1,8)) = 4
 
-        [Header(Alpha Test)]
-        [Toggle(USE_ALPHA_TEST)] _UseAlphaTest("Enable", Float) = 0
+        [Toggle(USE_ALPHA_TEST)] _UseAlphaTest("Enable Alpha Test", Float) = 0
         _AlphaCutoff("Alpha Cutoff", Float) = 0.5
+        _AlphaToMask("Alpha To Mask", Float) = 1
 
-        [Header(Color Blending)]
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Source Blend", Float) = 1 //"One"
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Destination Blend", Float) = 0 //"Zero"
         [Enum(Add,0,Sub,1,RevSub,2,Min,3,Max,4)] _BlendOp("Blend Operation", Float) = 0 // "Add"
 
-        [Header(Depth Test)]
         [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 4 //"LEqual"
         [Enum(Off,0,On,1)] _ZWrite("ZWrite", Float) = 1.0 //"On"
         _OffsetFactor("Offset Factor", Range(-1, 1)) = 0
         _OffsetUnits("Offset Units", Range(-1, 1)) = 0
 
-        [Header(Render Settings)]
         [Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 2
         [Toggle(USE_FOG)] _UseFog("Use Fog", Float) = 1
         [Toggle(RECEIVE_SHADOWS)] _ShouldReceiveShadows("Receives Shadows", Float) = 1
@@ -69,6 +63,7 @@ Shader "OSP Minimal/Unlit Fancy"
         BlendOp [_BlendOp]
         ZTest[_ZTest]
         ZWrite[_ZWrite]
+        AlphaToMask [_AlphaToMask]
         Cull [_Cull]
         Offset [_OffsetFactor], [_OffsetUnits]
 
@@ -104,7 +99,6 @@ Shader "OSP Minimal/Unlit Fancy"
             float4 _MainTex_ST;
             float2 _ScrollVelocity;
 
-#ifdef USE_DETAIL_TEXTURE
             UNITY_DECLARE_TEX2D(_DetailTexture);
             float4 _DetailTexture_ST;
             float4 _DetailTextureTint;
@@ -112,17 +106,13 @@ Shader "OSP Minimal/Unlit Fancy"
             float _DetailTextureBlend;
             float _DetailTextureBlendMode;
             float2 _DetailTextureScrollVelocity;
-#endif
 
-#ifdef USE_MATCAP
             UNITY_DECLARE_TEX2D(_MatcapTexture);
             float4 _MatcapTexture_ST;
             float4 _MatcapTextureTint;
             float _MatcapTextureBlend;
             float _MatcapTextureBlendMode;
-#endif
 
-#ifdef USE_FLIPBOOK
             UNITY_DECLARE_TEX2DARRAY(_FlipbookTexArray);
             float4 _FlipbookTexArray_ST;
             float4 _FlipbookTint;
@@ -131,19 +121,12 @@ Shader "OSP Minimal/Unlit Fancy"
             float _FlipbookFramesPerSecond;
             float _FlipbookUseManualFrame;
             int _FlipbookManualFrame;
-#endif
 
-#ifdef USE_ALPHA_TEST
             float _AlphaCutoff;
-#endif
 
-#ifdef USE_AFFINE_MAPPING
             float _AffineDistortion;
-#endif
 
-#ifdef USE_POLYGON_JITTER
             float _PolygonJitter;
-#endif
 
             struct vertexInput
             {
@@ -160,23 +143,14 @@ Shader "OSP Minimal/Unlit Fancy"
                 float4 pos : SV_POSITION;
                 // The z component is used for affine texture mapping.
                 float3 uv0 : TEXCOORD0;
-#ifdef USE_DETAIL_TEXTURE
                 float2 uv1 : TEXCOORD1;
-#endif
-#if defined(LIGHTMAP_ON)
                 float2 uv2 : TEXCOORD2;
-#endif
-#ifdef USE_FLIPBOOK
                 float4 uv3 : TEXCOORD7;
-#endif
                 float4 color : TEXCOORD4;
-#ifdef USE_MATCAP
                 half3 viewDirection : TEXCOORD8;
                 half3 viewNormal : TEXCOORD9;
-#endif // USE_MATCAP
                 LIGHTING_COORDS(5,10)
                 OSP_FOG_COORDS(6)
-
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
@@ -189,49 +163,49 @@ Shader "OSP Minimal/Unlit Fancy"
 
                 output.pos = UnityObjectToClipPos(input.vertex);
 
-#ifdef USE_POLYGON_JITTER
-                output.pos = JitterVertex(output.pos, _PolygonJitter);
-#endif
+                #ifdef USE_POLYGON_JITTER
+                    output.pos = JitterVertex(output.pos, _PolygonJitter);
+                #endif
 
                 output.uv0.xy = TRANSFORM_TEX(input.uv0, _MainTex) + _Time.y * _ScrollVelocity;
                 output.uv0.z = 1.0;
 
-#ifdef USE_AFFINE_MAPPING
-                // True affine mapping distorts to an extreme when the camera
-                // gets close. PS1 games tessellate polygons that are close to
-                // the camera, to compensate. But this tesselation is tough to
-                // simulate. So instead use adjustable affine distortion that
-                // reduces when close.
-                float distance = length(UnityObjectToClipPos(input.vertex));
-                float counterCorrection = distance + (output.pos.w * _AffineDistortion) / distance / 2.0;
-                output.uv0.xy *= counterCorrection;
-                output.uv0.z = counterCorrection;
-#endif
+                #ifdef USE_AFFINE_MAPPING
+                    // True affine mapping distorts to an extreme when the camera
+                    // gets close. PS1 games tessellate polygons that are close to
+                    // the camera, to compensate. But this tesselation is tough to
+                    // simulate. So instead use adjustable affine distortion that
+                    // reduces when close.
+                    float distance = length(UnityObjectToClipPos(input.vertex));
+                    float counterCorrection = distance + (output.pos.w * _AffineDistortion) / distance / 2.0;
+                    output.uv0.xy *= counterCorrection;
+                    output.uv0.z = counterCorrection;
+                #endif
 
-#ifdef USE_DETAIL_TEXTURE
-                output.uv1 = TRANSFORM_TEX(input.uv0, _DetailTexture) + _Time.y * _DetailTextureScrollVelocity;
-#endif
+                #ifdef USE_DETAIL_TEXTURE
+                    output.uv1 = TRANSFORM_TEX(input.uv0, _DetailTexture) + _Time.y * _DetailTextureScrollVelocity;
+                #endif
 
-#ifdef USE_MATCAP
-                output.viewDirection = normalize(UnityObjectToViewPos(input.vertex.xyz));
-                output.viewNormal = normalize(mul((float3x3) UNITY_MATRIX_IT_MV, input.normal));
-#endif // USE_MATCAP
+                #ifdef USE_MATCAP
+                    output.viewDirection = normalize(UnityObjectToViewPos(input.vertex.xyz));
+                    output.viewNormal = normalize(mul((float3x3) UNITY_MATRIX_IT_MV, input.normal));
+                #endif
 
-#if defined(LIGHTMAP_ON)
-                output.uv2 = input.uv1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
-#endif
+                #if defined(LIGHTMAP_ON)
+                    output.uv2 = input.uv1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
+                #endif
 
-#ifdef USE_FLIPBOOK
-                float2 transformedTexcoord = TRANSFORM_TEX(input.uv0, _FlipbookTexArray);
-                float2 scrolledTexcoord = transformedTexcoord + _Time.y * _FlipbookScrollVelocity;
-                output.uv3 = GetFlipbookTexcoord(_FlipbookTexArray, scrolledTexcoord, _FlipbookFramesPerSecond, _FlipbookUseManualFrame, _FlipbookManualFrame);
-#endif
+                #ifdef USE_FLIPBOOK
+                    float2 transformedTexcoord = TRANSFORM_TEX(input.uv0, _FlipbookTexArray);
+                    float2 scrolledTexcoord = transformedTexcoord + _Time.y * _FlipbookScrollVelocity;
+                    output.uv3 = GetFlipbookTexcoord(_FlipbookTexArray, scrolledTexcoord, _FlipbookFramesPerSecond, _FlipbookUseManualFrame, _FlipbookManualFrame);
+                #endif
 
-#ifdef _VERTEXCOLORMODE_BAKERY_LIGHTMAPS
-                output.color = DecodeBakeryVertexLightmap(input.color);
-#else
-                output.color = input.color;
-#endif
+                #ifdef _VERTEXCOLORMODE_BAKERY_LIGHTMAPS
+                    output.color = DecodeBakeryVertexLightmap(input.color);
+                #else
+                    output.color = input.color;
+                #endif
                 
                 TRANSFER_VERTEX_TO_FRAGMENT(output)
                 OSP_TRANSFER_FOG(input.vertex, output)
@@ -242,14 +216,17 @@ Shader "OSP Minimal/Unlit Fancy"
             fixed GetShadowAttenuation(vertexOutput input)
             {
                 fixed shadow = SHADOW_ATTENUATION(input);
-#if defined(DIRECTIONAL)
-                fixed light = 0.5;
-#elif defined(POINT)
-                fixed light = (tex2D(_LightTexture0, dot(input._LightCoord, input._LightCoord).rr)).r;
-#elif defined(SPOT)
-                fixed light = (input._LightCoord.z > 0) * UnitySpotCookie(input._LightCoord) * UnitySpotAttenuate(input._LightCoord.xyz);
-#endif
+
+                #if defined(DIRECTIONAL)
+                    fixed light = 0.5;
+                #elif defined(POINT)
+                    fixed light = (tex2D(_LightTexture0, dot(input._LightCoord, input._LightCoord).rr)).r;
+                #elif defined(SPOT)
+                    fixed light = (input._LightCoord.z > 0) * UnitySpotCookie(input._LightCoord) * UnitySpotAttenuate(input._LightCoord.xyz);
+                #endif
+
                 fixed attenuation = shadow < 0.2 ? (1.0 - light) : 1.0;
+
                 return attenuation;
             }
 
@@ -263,60 +240,60 @@ Shader "OSP Minimal/Unlit Fancy"
 
                 float4 albedo = _Color * texture1Color;
 
-#ifdef USE_DETAIL_TEXTURE
-                float4 texture2Color = UNITY_SAMPLE_TEX2D(_DetailTexture, input.uv1);
-                texture2Color.rgb = AdjustToShadingColorSpace(texture2Color.rgb);
+                #ifdef USE_DETAIL_TEXTURE
+                    float4 texture2Color = UNITY_SAMPLE_TEX2D(_DetailTexture, input.uv1);
+                    texture2Color.rgb = AdjustToShadingColorSpace(texture2Color.rgb);
 
-                float detailBlend = GetBlendAmount(_DetailTextureBlend, input.color, _DetailTextureBlendBy);
-                albedo = lerp(albedo, BlendColor(_DetailTextureTint * texture2Color, albedo, _DetailTextureBlendMode), detailBlend);
-#endif // USE_DETAIL_TEXTURE
+                    float detailBlend = GetBlendAmount(_DetailTextureBlend, input.color, _DetailTextureBlendBy);
+                    albedo = lerp(albedo, BlendColor(_DetailTextureTint * texture2Color, albedo, _DetailTextureBlendMode), detailBlend);
+                #endif
 
-#ifdef USE_MATCAP
-                float2 matcapTexcoord = GetMatcapTexcoord(input.viewDirection, input.viewNormal);
-                fixed4 matcapColor = UNITY_SAMPLE_TEX2D(_MatcapTexture, matcapTexcoord);
-                matcapColor.rgb = AdjustToShadingColorSpace(matcapColor.rgb);
+                #ifdef USE_MATCAP
+                    float2 matcapTexcoord = GetMatcapTexcoord(input.viewDirection, input.viewNormal);
+                    fixed4 matcapColor = UNITY_SAMPLE_TEX2D(_MatcapTexture, matcapTexcoord);
+                    matcapColor.rgb = AdjustToShadingColorSpace(matcapColor.rgb);
 
-                albedo = lerp(albedo, BlendColor(_MatcapTextureTint * matcapColor, albedo, _MatcapTextureBlendMode), _MatcapTextureBlend);
-#endif // USE_MATCAP
+                    albedo = lerp(albedo, BlendColor(_MatcapTextureTint * matcapColor, albedo, _MatcapTextureBlendMode), _MatcapTextureBlend);
+                #endif
 
-#ifdef USE_FLIPBOOK
-                float4 flipbookColor = UNITY_SAMPLE_TEX2DARRAY(_FlipbookTexArray, input.uv3.xyz);
+                #ifdef USE_FLIPBOOK
+                    float4 flipbookColor = UNITY_SAMPLE_TEX2DARRAY(_FlipbookTexArray, input.uv3.xyz);
 
-#if defined(USE_FLIPBOOK_SMOOTHING)
-                float4 flipbookColor2 = UNITY_SAMPLE_TEX2DARRAY(_FlipbookTexArray, input.uv3.xyw);
-                flipbookColor = lerp(flipbookColor, flipbookColor2, frac(input.uv3.z));
-#endif // USE_FLIPBOOK_SMOOTHING
+                    #if defined(USE_FLIPBOOK_SMOOTHING)
+                        float4 flipbookColor2 = UNITY_SAMPLE_TEX2DARRAY(_FlipbookTexArray, input.uv3.xyw);
+                        flipbookColor = lerp(flipbookColor, flipbookColor2, frac(input.uv3.z));
+                    #endif
 
-                flipbookColor.rgb = AdjustToShadingColorSpace(flipbookColor.rgb);
-                albedo = BlendColor(_FlipbookTint * flipbookColor, albedo, _FlipbookBlendMode);
-#endif // USE_FLIPBOOK
+                    flipbookColor.rgb = AdjustToShadingColorSpace(flipbookColor.rgb);
+                    albedo = BlendColor(_FlipbookTint * flipbookColor, albedo, _FlipbookBlendMode);
+                #endif
 
-#ifdef USE_ALPHA_TEST
-                clip(albedo.a - _AlphaCutoff);
-#endif
+                #ifdef USE_ALPHA_TEST
+                    clip(albedo.a - _AlphaCutoff);
+                #endif
 
                 float4 indirectLight = albedo;
 
-#if defined(_VERTEXCOLORMODE_CUSTOM) || defined(_VERTEXCOLORMODE_BAKERY_LIGHTMAPS)
-                indirectLight.rgb *= input.color.rgb;
-#endif
+                #if defined(_VERTEXCOLORMODE_CUSTOM) || defined(_VERTEXCOLORMODE_BAKERY_LIGHTMAPS)
+                    indirectLight.rgb *= input.color.rgb;
+                #endif
 
                 indirectLight.rgb = AdjustFromShadingColorSpace(indirectLight.rgb);
 
-#if defined(LIGHTMAP_ON)
-                indirectLight *= SampleLightmap(input.uv2.xy);
-#endif // LIGHTMAP_ON
+                #if defined(LIGHTMAP_ON)
+                    indirectLight *= SampleLightmap(input.uv2.xy);
+                #endif // LIGHTMAP_ON
 
-#if defined(RECEIVE_SHADOWS)
-                fixed shadow = GetShadowAttenuation(input);
-                indirectLight.rgb *= shadow;
-#endif
+                #if defined(RECEIVE_SHADOWS)
+                    fixed shadow = GetShadowAttenuation(input);
+                    indirectLight.rgb *= shadow;
+                #endif
 
                 fixed4 col = fixed4(indirectLight.rgb, albedo.a);
 
-#if defined(USE_FOG)
-                OSP_APPLY_FOG(col, input)
-#endif
+                #if defined(USE_FOG)
+                    OSP_APPLY_FOG(col, input)
+                #endif
 
                 return col;
             }
@@ -382,14 +359,17 @@ Shader "OSP Minimal/Unlit Fancy"
             fixed GetShadowAttenuation(vertexOutput input)
             {
                 fixed shadow = SHADOW_ATTENUATION(input);
-#if defined(DIRECTIONAL)
-                fixed light = 0.5;
-#elif defined(POINT)
-                fixed light = (tex2D(_LightTexture0, dot(input._LightCoord, input._LightCoord).rr)).r;
-#elif defined(SPOT)
-                fixed light = (input._LightCoord.z > 0) * UnitySpotCookie(input._LightCoord) * UnitySpotAttenuate(input._LightCoord.xyz);
-#endif
+
+                #if defined(DIRECTIONAL)
+                    fixed light = 0.5;
+                #elif defined(POINT)
+                    fixed light = (tex2D(_LightTexture0, dot(input._LightCoord, input._LightCoord).rr)).r;
+                #elif defined(SPOT)
+                    fixed light = (input._LightCoord.z > 0) * UnitySpotCookie(input._LightCoord) * UnitySpotAttenuate(input._LightCoord.xyz);
+                #endif
+
                 fixed attenuation = shadow < 0.2 ? (1.0 - light) : 1.0;
+
                 return attenuation;
             }
 
@@ -399,9 +379,9 @@ Shader "OSP Minimal/Unlit Fancy"
 
                 fixed4 col = 1.0;
 
-#if defined(RECEIVE_SHADOWS)
-                col.rgb *= GetShadowAttenuation(input);
-#endif
+                #if defined(RECEIVE_SHADOWS)
+                    col.rgb *= GetShadowAttenuation(input);
+                #endif
 
                 // TODO: Make the shadow brighter where it's foggy.
 
@@ -435,6 +415,10 @@ Shader "OSP Minimal/Unlit Fancy"
             Tags { "LightMode" = "Meta" }
             Cull Off
             CGPROGRAM
+            #pragma vertex vert_meta2
+            #pragma fragment frag_meta2
+            #pragma shader_feature_local USE_DETAIL_TEXTURE
+            #pragma shader_feature_local USE_GAMMA_SPACE
 
             #include "UnityStandardMeta.cginc"
             #include "OspMinimalCore.cginc"
@@ -448,19 +432,21 @@ Shader "OSP Minimal/Unlit Fancy"
             {
                 float4 pos : SV_POSITION;
                 float4 uv0 : TEXCOORD0;
-#ifdef USE_DETAIL_TEXTURE
                 float4 uv1 : TEXCOORD1;
-#endif
             };
 
             v2f_meta2 vert_meta2(VertexInput v)
             {
                 v2f_meta2 o;
+                UNITY_INITIALIZE_OUTPUT(v2f_meta2, o);
+
                 o.pos = UnityMetaVertexPosition(v.vertex, v.uv1.xy, v.uv2.xy, unity_LightmapST, unity_DynamicLightmapST);
                 o.uv0 = TexCoords(v);
-#ifdef USE_DETAIL_TEXTURE
-                o.uv1.xy = TRANSFORM_TEX(v.uv0, _DetailTexture);
-#endif
+
+                #ifdef USE_DETAIL_TEXTURE
+                    o.uv1.xy = TRANSFORM_TEX(v.uv0, _DetailTexture);
+                #endif
+
                 return o;
             }
 
@@ -474,12 +460,12 @@ Shader "OSP Minimal/Unlit Fancy"
 
                 float4 albedo = _Color * texture1Color;
 
-#ifdef USE_DETAIL_TEXTURE
-                float4 texture2Color = _DetailTextureTint * tex2D(_DetailTexture, i.uv1);
-                texture2Color.rgb = AdjustToShadingColorSpace(texture2Color.rgb);
+                #ifdef USE_DETAIL_TEXTURE
+                    float4 texture2Color = _DetailTextureTint * tex2D(_DetailTexture, i.uv1);
+                    texture2Color.rgb = AdjustToShadingColorSpace(texture2Color.rgb);
 
-                albedo = lerp(albedo, texture2Color, _DetailTextureBlend);
-#endif // USE_DETAIL_TEXTURE
+                    albedo = lerp(albedo, texture2Color, _DetailTextureBlend);
+                #endif
 
                 albedo.rgb = AdjustFromShadingColorSpace(albedo.rgb);
 
@@ -487,12 +473,8 @@ Shader "OSP Minimal/Unlit Fancy"
 
                 return UnityMetaFragment(o);
             }
-
-            #pragma shader_feature_local USE_DETAIL_TEXTURE
-            #pragma shader_feature_local USE_GAMMA_SPACE
-            #pragma vertex vert_meta2
-            #pragma fragment frag_meta2
             ENDCG
         }
     }
+    CustomEditor "OrchidSeal.MinimalShaders.Editor.UnlitFancyEditor"
 }

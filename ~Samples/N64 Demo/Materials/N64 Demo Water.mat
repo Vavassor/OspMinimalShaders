@@ -15,7 +15,8 @@ Material:
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 3000
-  stringTagMap: {}
+  stringTagMap:
+    RenderType: Transparent
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -75,6 +76,8 @@ Material:
     m_Floats:
     - _AffineDistortion: 0.5
     - _AlphaCutoff: 0.5
+    - _AlphaToMask: 0
+    - _BlendMode: 2
     - _BlendOp: 0
     - _BumpScale: 1
     - _CombineBlend: 0.5
