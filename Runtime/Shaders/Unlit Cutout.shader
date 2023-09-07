@@ -1,15 +1,18 @@
-Shader "OSP Minimal/Unlit Transparent Cutout"
+// An unlit shader for cutout objects. Also called alpha clipping or alpha
+// testing. It optionally supports lightmaps.
+Shader "OSP Minimal/Unlit Cutout"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Color("Color", Color) = (1, 1, 1, 1)
+        _Color("Tint", Color) = (1, 1, 1, 1)
         _AlphaCutoff("Alpha Cutoff", Float) = 0.5
         [KeywordEnum(None, Multiply, Bakery Lightmaps)] _VertexColorMode("Vertex Color Mode", Float) = 1
         [Toggle(USE_GAMMA_COLORSPACE)] _UseGammaSpace("Use Gamma Space Blending", Float) = 1
         [Toggle(USE_FOG)] _UseFog("Use Fog", Float) = 1
         [Toggle(USE_LIGHTMAP)] _UseLightmap("Use Lightmap", Float) = 1
         [Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 2
+        [Toggle] _AlphaToMask("Alpha To Mask", Float) = 1
     }
     SubShader
     {
@@ -19,7 +22,7 @@ Shader "OSP Minimal/Unlit Transparent Cutout"
             "RenderType" = "TransparentCutout"
         }
 
-        AlphaToMask On
+        AlphaToMask [_AlphaToMask]
         ZTest LEqual
         ZWrite On
         Cull [_Cull]

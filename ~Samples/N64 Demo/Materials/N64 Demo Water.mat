@@ -73,7 +73,7 @@ Material:
         m_Scale: {x: 6, y: 6}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AffineDistortion: 1
+    - _AffineDistortion: 0.5
     - _AlphaCutoff: 0.5
     - _BlendOp: 0
     - _BumpScale: 1
@@ -101,7 +101,7 @@ Material:
     - _OffsetFactor: 0
     - _OffsetUnits: 0
     - _Parallax: 0.02
-    - _PolygonJitter: 1
+    - _PolygonJitter: 4
     - _ShouldReceiveShadows: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -111,6 +111,7 @@ Material:
     - _UseAlphaTest: 0
     - _UseDetailTexture: 1
     - _UseFlipbook: 0
+    - _UseFlipbookSmoothing: 0
     - _UseFog: 1
     - _UseGammaSpace: 1
     - _UseMatcap: 0

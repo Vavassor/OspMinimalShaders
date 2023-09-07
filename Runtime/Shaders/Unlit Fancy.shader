@@ -4,7 +4,7 @@ Shader "OSP Minimal/Unlit Fancy"
     Properties
     {
         _MainTex("Albedo", 2D) = "white" {}
-        _Color("Color", Color) = (1,1,1,1)
+        _Color("Tint", Color) = (1,1,1,1)
         _ScrollVelocity("Scroll Velocity", Vector) = (0, 0, 0, 0)
         [Toggle(USE_GAMMA_COLORSPACE)] _UseGammaSpace("Use Gamma Space Blending", Float) = 1
         [KeywordEnum(None, Custom, Bakery Lightmaps)] _VertexColorMode("Vertex Color Mode", Float) = 0
@@ -47,8 +47,8 @@ Shader "OSP Minimal/Unlit Fancy"
         _AlphaCutoff("Alpha Cutoff", Float) = 0.5
 
         [Header(Color Blending)]
-        [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("SrcBlend", Float) = 1 //"One"
-        [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("DestBlend", Float) = 0 //"Zero"
+        [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Source Blend", Float) = 1 //"One"
+        [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Destination Blend", Float) = 0 //"Zero"
         [Enum(Add,0,Sub,1,RevSub,2,Min,3,Max,4)] _BlendOp("Blend Operation", Float) = 0 // "Add"
 
         [Header(Depth Test)]
@@ -57,9 +57,8 @@ Shader "OSP Minimal/Unlit Fancy"
         _OffsetFactor("Offset Factor", Range(-1, 1)) = 0
         _OffsetUnits("Offset Units", Range(-1, 1)) = 0
 
-        [Header(Culling)]
+        [Header(Render Settings)]
         [Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 2
-
         [Toggle(USE_FOG)] _UseFog("Use Fog", Float) = 1
         [Toggle(RECEIVE_SHADOWS)] _ShouldReceiveShadows("Receives Shadows", Float) = 1
     }

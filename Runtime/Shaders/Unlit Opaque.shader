@@ -1,9 +1,10 @@
+// An unlit shader for opaque objects. It optionally supports lightmaps.
 Shader "OSP Minimal/Unlit Opaque"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Color("Color", Color) = (1, 1, 1, 1)
+        _Color("Tint", Color) = (1, 1, 1, 1)
         [KeywordEnum(None, Multiply, Bakery Lightmaps)] _VertexColorMode("Vertex Color Mode", Float) = 1
         [Toggle(USE_GAMMA_COLORSPACE)] _UseGammaSpace("Use Gamma Space Blending", Float) = 1
         [Toggle(USE_FOG)] _UseFog("Use Fog", Float) = 1

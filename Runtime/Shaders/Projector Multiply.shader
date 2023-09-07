@@ -1,3 +1,5 @@
+// This shader is for materials for the Projector component.
+// https://docs.unity3d.com/2019.4/Documentation/Manual/class-Projector.html
 Shader "OSP Minimal/Projector Multiply"
 {
     Properties
@@ -11,6 +13,7 @@ Shader "OSP Minimal/Projector Multiply"
         {
 			ZWrite Off
 
+			// Multiplicative blending
 			Blend Zero OneMinusSrcAlpha
 			Offset -1, -1
 

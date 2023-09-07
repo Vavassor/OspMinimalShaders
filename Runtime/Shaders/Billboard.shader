@@ -1,15 +1,16 @@
-﻿Shader "OSP Minimal/Billboard"
+﻿// Billboards are a flat image or sprite that always face the camera.
+Shader "OSP Minimal/Billboard"
 {
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
 	    _Color("Tint", Color) = (1, 1, 1, 1)
 		[KeywordEnum(Multiply, Overlay)] _ColorMode("Tint Color Mode", Float) = 0
+		[HideInInspector] [Enum(Opaque,0,Cutout,1,Transparent,2,Custom,3)] _BlendMode("Blend Mode", Int) = 2
 	    [Toggle(USE_GAMMA_COLORSPACE)] _UseGammaSpace("Use Gamma Space Blending", Float) = 1
 		[Toggle(STAY_UPRIGHT)] _StayUpright("Stay Upright", Float) = 1
 
-		[Header(Flipbook)]
-		[Toggle(USE_FLIPBOOK)] _UseFlipbook("Enable", Float) = 0
+		[Toggle(USE_FLIPBOOK)] _UseFlipbook("Enable Flipbook", Float) = 0
 		_FlipbookTexArray("Texture Array", 2DArray) = "" {}
 		_FlipbookTint("Tint", Color) = (1,1,1,1)
 		_FlipbookScrollVelocity("Scroll Velocity", Vector) = (0, 0, 0, 0)
@@ -17,18 +18,16 @@
 		_FlipbookFramesPerSecond("Frames Per Second", Float) = 30
 		[Toggle(USE_FLIPBOOK_SMOOTHING)] _UseFlipbookSmoothing("Smoothing", Float) = 0
 		[Toggle] _FlipbookUseManualFrame("Control Frame Manually", Float) = 0
-		_FlipbookManualFrame("Frame", Float) = 0
+		_FlipbookManualFrame("Manual Frame", Float) = 0
 
-	    [Header(Alpha Test)]
-		[Toggle(USE_ALPHA_TEST)] _UseAlphaTest("Enable", Float) = 0
+		[Toggle(USE_ALPHA_TEST)] _UseAlphaTest("Enable Alpha Test", Float) = 0
 		_AlphaCutoff("Alpha Cutoff", Float) = 0.5
+		[Toggle] _AlphaToMask("Alpha To Mask", Float) = 1
 
-		[Header(Color Blending)]
-		[Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("SrcBlend", Float) = 5 //"SrcAlpha"
-		[Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("DestBlend", Float) = 10 //"OneMinusSrcAlpha"
+		[Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Source Blend", Float) = 5 //"SrcAlpha"
+		[Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Destination Blend", Float) = 10 //"OneMinusSrcAlpha"
 		[Enum(Add,0,Sub,1,RevSub,2,Min,3,Max,4)] _BlendOp("Blend Operation", Float) = 0 // "Add"
 
-	    [Header(Depth Test)]
 		[Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 4 //"LessEqual"
 		[Enum(Off,0,On,1)] _ZWrite("ZWrite", Float) = 0.0 //"Off"
 	}
@@ -48,6 +47,7 @@
 		ZTest [_ZTest]
 		ZWrite [_ZWrite]
 		Cull Off
+		AlphaToMask [_AlphaToMask]
 
 		Pass
 		{
@@ -74,9 +74,7 @@
 			struct v2f
 			{
 				float2 uv0 : TEXCOORD0;
-#ifdef USE_FLIPBOOK
 				float4 uv1 : TEXCOORD1;
-#endif // USE_FLIPBOOK
 				UNITY_FOG_COORDS(2)
 				float4 pos : SV_POSITION;
 			};
@@ -85,7 +83,7 @@
 			float4 _MainTex_ST;
 			float4 _Color;
 
-#ifdef USE_FLIPBOOK
+			// Flipbook
 			UNITY_DECLARE_TEX2DARRAY(_FlipbookTexArray);
 			float4 _FlipbookTexArray_ST;
 			float4 _FlipbookTint;
@@ -94,11 +92,9 @@
 			float _FlipbookFramesPerSecond;
 			float _FlipbookUseManualFrame;
 			int _FlipbookManualFrame;
-#endif
 
-#ifdef USE_ALPHA_TEST
+			// Alpha Test
 			float _AlphaCutoff;
-#endif
 
 			bool IsInMirror()
 			{
@@ -107,11 +103,11 @@
 
 			float3 GetCenterCameraPosition()
 			{
-#if defined(USING_STEREO_MATRICES)
-				float3 worldPosition = (unity_StereoWorldSpaceCameraPos[0] + unity_StereoWorldSpaceCameraPos[1]) / 2.0;
-#else
-				float3 worldPosition = _WorldSpaceCameraPos.xyz;
-#endif
+				#if defined(USING_STEREO_MATRICES)
+					float3 worldPosition = (unity_StereoWorldSpaceCameraPos[0] + unity_StereoWorldSpaceCameraPos[1]) / 2.0;
+				#else
+					float3 worldPosition = _WorldSpaceCameraPos.xyz;
+				#endif
 				return worldPosition;
 			}
 
@@ -149,16 +145,17 @@
 				float3 objectScale = GetScale(unity_ObjectToWorld);
 				float3 forward = mul(unity_ObjectToWorld, float4(0, 0, 1, 0)).xyz;
 				float3 viewDirectionWs = objectCenterWs - cameraPositionWs;
+
 				if (IsInMirror())
 				{
 					viewDirectionWs = mul((float3x3) unity_WorldToObject, unity_CameraWorldClipPlanes[5].xyz);
 				}
 
-#if defined(STAY_UPRIGHT)
-				float3 up = float3(0, 1, 0);
-#else
-				float3 up = mul(UNITY_MATRIX_I_V, float4(0, 1, 0, 0)).xyz;
-#endif
+				#if defined(STAY_UPRIGHT)
+					float3 up = float3(0, 1, 0);
+				#else
+					float3 up = mul(UNITY_MATRIX_I_V, float4(0, 1, 0, 0)).xyz;
+				#endif
 
 				float3x3 rotation = LookAtMatrix(viewDirectionWs, up);
 				float3 positionWs = mul(rotation, objectScale * length(forward) * v.vertex.xyz) + objectCenterWs.xyz;
@@ -166,11 +163,11 @@
 
 				o.uv0 = TRANSFORM_TEX(v.uv, _MainTex);
 
-#ifdef USE_FLIPBOOK
-				float2 transformedTexcoord = TRANSFORM_TEX(v.uv, _FlipbookTexArray);
-				float2 scrolledTexcoord = transformedTexcoord + _Time.y * _FlipbookScrollVelocity;
-				o.uv1 = GetFlipbookTexcoord(_FlipbookTexArray, scrolledTexcoord, _FlipbookFramesPerSecond, _FlipbookUseManualFrame, _FlipbookManualFrame);
-#endif
+				#ifdef USE_FLIPBOOK
+					float2 transformedTexcoord = TRANSFORM_TEX(v.uv, _FlipbookTexArray);
+					float2 scrolledTexcoord = transformedTexcoord + _Time.y * _FlipbookScrollVelocity;
+					o.uv1 = GetFlipbookTexcoord(_FlipbookTexArray, scrolledTexcoord, _FlipbookFramesPerSecond, _FlipbookUseManualFrame, _FlipbookManualFrame);
+				#endif
 
 				UNITY_TRANSFER_FOG(o,o.pos);
 
@@ -182,28 +179,28 @@
 				fixed4 col = UNITY_SAMPLE_TEX2D(_MainTex, i.uv0);
 				col.rgb = AdjustToShadingColorSpace(col.rgb);
 
-#if defined(_COLORMODE_MULTIPLY)
-				col *= _Color;
-#elif defined(_COLORMODE_OVERLAY)
-				col.rgb = lerp(1 - 2 * (1 - col.rgb) * (1 - _Color.rgb), 2 * col.rgb * _Color.rgb, step(col.rgb, 0.5));
-				col.a *= _Color.a;
-#endif
+				#if defined(_COLORMODE_MULTIPLY)
+					col *= _Color;
+				#elif defined(_COLORMODE_OVERLAY)
+					col.rgb = lerp(1 - 2 * (1 - col.rgb) * (1 - _Color.rgb), 2 * col.rgb * _Color.rgb, step(col.rgb, 0.5));
+					col.a *= _Color.a;
+				#endif
 
-#if defined(USE_FLIPBOOK)
-				float4 flipbookColor = UNITY_SAMPLE_TEX2DARRAY(_FlipbookTexArray, i.uv1.xyz);
+				#if defined(USE_FLIPBOOK)
+					float4 flipbookColor = UNITY_SAMPLE_TEX2DARRAY(_FlipbookTexArray, i.uv1.xyz);
 
-#if defined(USE_FLIPBOOK_SMOOTHING)
-				float4 flipbookColor2 = UNITY_SAMPLE_TEX2DARRAY(_FlipbookTexArray, i.uv1.xyw);
-				flipbookColor = lerp(flipbookColor, flipbookColor2, frac(i.uv1.z));
-#endif // USE_FLIPBOOK_SMOOTHING
+					#if defined(USE_FLIPBOOK_SMOOTHING)
+						float4 flipbookColor2 = UNITY_SAMPLE_TEX2DARRAY(_FlipbookTexArray, i.uv1.xyw);
+						flipbookColor = lerp(flipbookColor, flipbookColor2, frac(i.uv1.z));
+					#endif
 
-				flipbookColor.rgb = AdjustToShadingColorSpace(flipbookColor.rgb);
-				col = BlendColor(_FlipbookTint * flipbookColor, col, _FlipbookBlendMode);
-#endif // USE_FLIPBOOK
+					flipbookColor.rgb = AdjustToShadingColorSpace(flipbookColor.rgb);
+					col = BlendColor(_FlipbookTint * flipbookColor, col, _FlipbookBlendMode);
+				#endif
 
-#ifdef USE_ALPHA_TEST
-				clip(col.a - _AlphaCutoff);
-#endif
+				#ifdef USE_ALPHA_TEST
+					clip(col.a - _AlphaCutoff);
+				#endif
 
 				col.rgb = AdjustFromShadingColorSpace(col.rgb);
 
@@ -213,4 +210,5 @@
 			ENDCG
 		}
 	}
+	CustomEditor "OrchidSeal.MinimalShaders.Editor.BillboardEditor"
 }

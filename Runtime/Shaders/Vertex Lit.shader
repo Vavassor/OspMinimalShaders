@@ -1,4 +1,4 @@
-﻿// A per-vertex lighting shader that supports vertex lightmaps and a light source fixed to the camera.
+﻿// A per-vertex lighting shader.
 Shader "OSP Minimal/Vertex Lit"
 {
     Properties
