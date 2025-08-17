@@ -1,324 +1,151 @@
-﻿// A per-vertex lighting shader.
+﻿// A per-vertex lighting shader that supports vertex lightmaps and a light source fixed to the camera.
 Shader "OSP Minimal/Vertex Lit"
 {
     Properties
     {
-       _MainTex("Albedo", 2D) = "white" {}
-       _Color("Color", Color) = (1,1,1,1)
-       _SpecColor("Specular Color", Color) = (1,1,1,1)
-       _Shininess("Shininess", Float) = 10
-       [Toggle(USE_GAMMA_SPACE)] _UseGammaSpace("Use Gamma Space Blending", Float) = 0
+        _Color("Color", Color) = (1,1,1,1)
+        _MainTex("Albedo", 2D) = "white" {}
+        [Enum(None, 0, Multiply, 1)] _VertexColorBlendMode("Vertex Color", Float) = 1
+        [Toggle(ALPHA_TEST_ON)] _UseAlphaTest("Use Alpha Test", Float) = 0
+        _Cutoff("Alpha Cutoff", Float) = 0.5
+        [Toggle(USE_GAMMA_SPACE)] _UseGammaSpace("Use Gamma Space Blending", Float) = 0
+        [Toggle(PIXEL_SHARPEN_ON)] _UsePixelSharpen("Sharp Pixels", Float) = 0
+        
+        [Header(Detail)]
+        [Toggle(DETAIL_MAP_ON)] _UseDetailMap("Enable", Float) = 0
+        _DetailMap("Detail", 2D) = "white" {}
+        _DetailMapTint("Tint", Color) = (1,1,1,1)
+        [Enum(UV0, 0, UV1, 1, UV2, 2, UV3, 3)] _DetailUvSet("UV Set", Float) = 0
+        [Enum(Mask Red, 0, Vertex Color Red, 1, Vertex Color Green, 2, Vertex Color Blue, 3, Vertex Color Alpha, 4)] _DetailMaskType("Mask Type", Int) = 0
+        [NoScaleOffset] _DetailMask("Detail Mask", 2D) = "white" {}
+        _DetailMapBlend("Strength", Range(0, 1)) = 1
+        [Enum(Lerp,0,Transparent,1,Add,2,Multiply,3)] _DetailTextureBlendMode("Blend Mode", Float) = 0
 
-       [Header(Fixed Light)]
-       [Toggle(USE_FIXED_LIGHT)] _UseFixedLight("Fixed Light", Float) = 0
-       _FixedAmbientColor("Ambient Color", Color) = (0.5, 0.5, 0.5, 1.0)
-       _FixedLightColor("Light Color", Color) = (1.0, 1.0, 1.0, 1.0)
-       // The default is Mario 64 light direction. https://forum.unity.com/threads/fake-shadows-in-shader.1276139/#post-8098937
-       _FixedLightDirection("Light Direction", Vector) = (-0.6929, -0.6929, -0.6929, 0.0)
+        [Header(Lighting)]
+        // _Ramp("Shadow Ramp", 2D) = "white" {}
+        _LightingBlend("Lighting", Range(0, 1)) = 1
+        _ShadowBoost("Shadow Boost", Range(0,1)) = 0.0
+        _ShadowAlbedo("Shadow Tint", Range(0,1)) = 0.5
+        _SpecColor("Specular Color", Color) = (1,1,1,1)
+        _Shininess("Shininess", Float) = 10
+        _FinalLightingMultiplier("Final Lighting Multiplier", Float) = 1
+        _FinalLightingMinBrightness("Final Lighting Min Brightness", Float) = 0
+        [KeywordEnum(None,Vertex)] _Vrclv_Mode("VRC Light Volumes", Int) = 0
 
-       [Header(Lightmaps)]
-       [KeywordEnum(None, Custom, Bakery Lightmaps)] _VertexColorMode("Vertex Color Mode", Float) = 0
+        [Header(Fixed Light)]
+        [Toggle(FIXED_LIGHT_ON)] _UseFixedLight("Fixed Light", Float) = 0
+        _FixedAmbientColor("Ambient Color", Color) = (0.5, 0.5, 0.5, 1.0)
+        _FixedLightColor("Light Color", Color) = (1.0, 1.0, 1.0, 1.0)
+        // The default is Mario 64 light direction. https://forum.unity.com/threads/fake-shadows-in-shader.1276139/#post-8098937
+        _FixedLightDirection("Light Direction", Vector) = (-0.6929, -0.6929, -0.6929, 0.0)
+        
+        [Header(Effects)]
+        [Toggle(AFFINE_MAPPING_ON)] _UseAffineMapping("Use Affine Mapping", Float) = 0
+        _AffineDistortion("Affine Distortion", Range(0, 8)) = 0.5
+        [Toggle(POLYGON_JITTER_ON)] _UsePolygonJitter("Use Polygon Jitter", Float) = 0
+        _PolygonJitter("Polygon Jitter", Range(0,8)) = 4
+        
+        [Header(Dither)]
+        [Toggle(DITHER_ON)] _UseDither("Enabled", Int) = 0
+        [NoScaleOffset] _DitherPattern("Pattern", 2D) = "black" {}
+        [Enum(UV0, 0, Screen_UV, 4)] _DitherUvSet("UV Set", Int) = 0
+        [IntRange] _DitherScale("Scale", Range(1, 16)) = 2
+        _DitherColorDepth("Color Depth", Float) = 32
+        
+        [Header(UV Tile Discard)]
+        [Toggle(UV_TILE_DISCARD_ON)] _UseUvTileDiscard("Enable", Float) = 0
+        [Enum(UV0, 0, UV1, 1, UV2, 2, UV3, 3)] _TileDiscardUvSet("UV Set", Float) = 0
+        _UvTileDiscardRow0("Row 0", Vector) = (0, 0, 0, 0)
+        _UvTileDiscardRow1("Row 1", Vector) = (0, 0, 0, 0)
+        _UvTileDiscardRow2("Row 2", Vector) = (0, 0, 0, 0)
+        _UvTileDiscardRow3("Row 3", Vector) = (0, 0, 0, 0)
+        
+        [Header(Blend)]
+        [Enum(UnityEngine.Rendering.BlendMode)] _BlendSrc("Source Blend", Float) = 5 //"SrcAlpha"
+        [Enum(UnityEngine.Rendering.BlendMode)] _BlendDst("Destination Blend", Float) = 10 //"OneMinusSrcAlpha"
+        [Enum(Add,0,Sub,1,RevSub,2,Min,3,Max,4)] _BlendOp("Blend Operation", Float) = 0 // "Add"
+        
+        [Header(Culling)]
+        [Enum(UnityEngine.Rendering.CullMode)] _CullMode("Cull", Float) = 2 //"Back"
+        
+        [Header(Depth Test)]
+        [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 4 //"LessEqual"
+        [Enum(Off,0,On,1)] _ZWrite("ZWrite", Float) = 0.0 //"Off"
+        _OffsetFactor("Offset Factor", Range(-1, 1)) = 0
+        _OffsetUnits("Offset Units", Range(-1, 1)) = 0
+        
+        [Header(Stencil)]
+        _StencilRef("Reference", Int) = 0
+        _StencilReadMask("Read Mask", Int) = 255
+        _StencilWriteMask("Write Mask", Int) = 255
+        [Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp("Comparison", Float) = 8
+        [Enum(UnityEngine.Rendering.StencilOp)] _StencilPass("Pass", Float) = 0
+        [Enum(UnityEngine.Rendering.StencilOp)] _StencilFail("Fail", Float) = 0
+        [Enum(UnityEngine.Rendering.StencilOp)] _StencilZFail("ZFail", Float) = 0
     }
     SubShader
     {
+        Blend [_BlendSrc] [_BlendDst]
+        BlendOp [_BlendOp]
+        Cull [_CullMode]
+        Offset [_OffsetFactor], [_OffsetUnits]
+        Stencil
+        {
+            Ref [_StencilRef]
+            ReadMask [_StencilReadMask]
+            WriteMask [_StencilWriteMask] 
+            Comp [_StencilComp]
+            Pass [_StencilPass]
+            Fail [_StencilFail]
+            ZFail [_StencilZFail]
+        }
+        ZTest [_ZTest]
+        ZWrite [_ZWrite]
+        
         Pass
         {
             Tags { "LightMode" = "ForwardBase" }
 
             CGPROGRAM
-
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma multi_compile_fwdbase nodirlightmap nodynlightmap novertexlight
-            #pragma multi_compile_instancing
+            #pragma vertex VertexProgram
+            #pragma fragment FragmentProgram
             #pragma multi_compile_fog
-            #pragma multi_compile _ LOD_FADE_CROSSFADE
-            #pragma multi_compile _VERTEXCOLORMODE_NONE _VERTEXCOLORMODE_CUSTOM _VERTEXCOLORMODE_BAKERY_LIGHTMAPS
-            #pragma shader_feature_local USE_FIXED_LIGHT
+            #pragma multi_compile_fwdbase nodirlightmap nodynlightmap
+            #pragma multi_compile_instancing
+            #pragma shader_feature_local AFFINE_MAPPING_ON
+            #pragma shader_feature_local ALPHA_TEST_ON
+            #pragma shader_feature_local DETAIL_MAP_ON
+            #pragma shader_feature_local DITHER_ON
+            #pragma shader_feature_local FIXED_LIGHT_ON
+            #pragma shader_feature_local PIXEL_SHARPEN_ON
+            #pragma shader_feature_local POLYGON_JITTER_ON
             #pragma shader_feature_local USE_GAMMA_SPACE
-
-            #include "UnityCG.cginc"
-            #include "AutoLight.cginc"
-
-            uniform float4 _LightColor0;
-
-            uniform float4 _Color;
-            uniform float4 _SpecColor;
-            uniform float _Shininess;
-            UNITY_DECLARE_TEX2D(_MainTex);
-            float4 _MainTex_ST;
-
-#ifdef USE_FIXED_LIGHT
-            uniform float4 _FixedAmbientColor;
-            uniform float4 _FixedLightColor;
-            uniform float3 _FixedLightDirection;
-#endif
-
-            struct vertexInput
-            {
-                float4 vertex : POSITION;
-                float2 uv0 : TEXCOORD0;
-                float2 uv1 : TEXCOORD1;
-                float3 normal : NORMAL;
-#if defined(_VERTEXCOLORMODE_CUSTOM) || defined(_VERTEXCOLORMODE_BAKERY_LIGHTMAPS)
-                float4 color : COLOR0;
-#endif
-                UNITY_VERTEX_INPUT_INSTANCE_ID
-            };
-
-            struct vertexOutput
-            {
-                float4 pos : SV_POSITION;
-                float2 uv0 : TEXCOORD0;
-                float2 uv1 : TEXCOORD1;
-                float3 diffuseLight : TEXCOORD2;
-                float4 specularReflection : TEXCOORD3;
-#if defined(_VERTEXCOLORMODE_CUSTOM) || defined(_VERTEXCOLORMODE_BAKERY_LIGHTMAPS)
-                float4 color : TEXCOORD4;
-#endif
-                SHADOW_COORDS(5)
-                UNITY_FOG_COORDS(6)
-                UNITY_VERTEX_OUTPUT_STEREO
-            };
-
-            vertexOutput vert(vertexInput input)
-            {
-                vertexOutput output;
-                UNITY_SETUP_INSTANCE_ID(input);
-                UNITY_INITIALIZE_OUTPUT(vertexOutput, output);
-                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
-                float4x4 modelMatrix = unity_ObjectToWorld;
-                float3x3 modelMatrixInverse = unity_WorldToObject;
-                float3 normalDirection = normalize(mul(input.normal, modelMatrixInverse));
-                float3 viewDirection = normalize(_WorldSpaceCameraPos - mul(modelMatrix, input.vertex).xyz);
-                float3 lightDirection;
-                float attenuation;
-
-#ifdef USE_FIXED_LIGHT
-                float3 ambientLighting = _FixedAmbientColor.rgb;
-                float3 lightColor = _FixedLightColor.rgb;
-                lightDirection = -normalize(mul((float3x3) UNITY_MATRIX_I_V, _FixedLightDirection));
-                attenuation = 1.0; // no attenuation
-#else
-                float3 ambientLighting = UNITY_LIGHTMODEL_AMBIENT.rgb;
-                float3 lightColor = _LightColor0.rgb;
-
-                if (0.0 == _WorldSpaceLightPos0.w)
-                {
-                    // directional light?
-                    attenuation = 1.0; // no attenuation
-                    lightDirection = normalize(_WorldSpaceLightPos0.xyz);
-                }
-                else
-                {
-                    // point or spot light
-                    float3 vertexToLightSource = _WorldSpaceLightPos0.xyz - mul(modelMatrix, input.vertex).xyz;
-                    float distance = length(vertexToLightSource);
-                    attenuation = 1.0 / distance; // linear attenuation 
-                    lightDirection = normalize(vertexToLightSource);
-                }
-#endif
-
-#ifdef USE_GAMMA_SPACE
-                ambientLighting = LinearToGammaSpace(ambientLighting);
-                lightColor = LinearToGammaSpace(lightColor);
-#endif
-
-                float3 diffuseReflection = attenuation * lightColor * max(0.0, dot(normalDirection, lightDirection));
-
-                float3 specularReflection;
-                if (dot(normalDirection, lightDirection) < 0.0)
-                {
-                    // light source on the wrong side?
-                    specularReflection = float3(0.0, 0.0, 0.0);
-                }
-                else
-                {
-                    // light source on the right side
-                    specularReflection = attenuation * lightColor * _SpecColor.rgb * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), _Shininess);
-                }
-
-                output.diffuseLight = ambientLighting + diffuseReflection;
-                output.specularReflection = float4(specularReflection, 1.0);
-                output.pos = UnityObjectToClipPos(input.vertex);
-                output.uv0 = TRANSFORM_TEX(input.uv0, _MainTex);
-
-#if defined(LIGHTMAP_ON)
-                output.uv1 = input.uv1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
-#endif
-
-#if defined(_VERTEXCOLORMODE_CUSTOM)
-                output.color = input.color;
-#elif defined(_VERTEXCOLORMODE_BAKERY_LIGHTMAPS)
-                // Decode baked HDR vertex color (RGBM)
-                output.color = input.color;
-                output.color.rgb *= input.color.a * 8.0;
-                output.color.rgb *= output.color.rgb;
-#endif
-                
-                TRANSFER_SHADOW(output)
-                UNITY_TRANSFER_FOG(output, output.pos);
-
-                return output;
-            }
-
-            float4 frag(vertexOutput input) : COLOR
-            {
-                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-                UNITY_APPLY_DITHER_CROSSFADE(input.pos.xy);
-
-                float4 textureColor = UNITY_SAMPLE_TEX2D(_MainTex, input.uv0);
-
-#ifdef USE_GAMMA_SPACE
-                textureColor.rgb = LinearToGammaSpace(textureColor.rgb);
-#endif
-
-                float4 albedo = _Color * textureColor;
-                float4 indirectLight = albedo;
-
-#if defined(_VERTEXCOLORMODE_CUSTOM) || defined(_VERTEXCOLORMODE_BAKERY_LIGHTMAPS)
-                indirectLight.rgb *= input.color.rgb;
-#endif
-#if defined(LIGHTMAP_ON)
-                fixed4 lightmapSample = UNITY_SAMPLE_TEX2D(unity_Lightmap, input.uv1.xy);
-                half4 bakedColor = half4(DecodeLightmap(lightmapSample), 1.0);
-                indirectLight *= bakedColor;
-#endif // LIGHTMAP_ON
-
-                fixed shadow = SHADOW_ATTENUATION(input);
-                input.diffuseLight *= shadow;
-                input.specularReflection *= shadow;
-
-                fixed4 col = fixed4(indirectLight.rgb + albedo.rgb * input.diffuseLight + input.specularReflection, 1.0);
-
-#ifdef USE_GAMMA_SPACE
-                col.rgb = GammaToLinearSpace(col.rgb);
-#endif
-
-                UNITY_APPLY_FOG(input.fogCoord, col);
-
-                return col;
-            }
-
+            #pragma shader_feature_local UV_TILE_DISCARD_ON
+            #pragma shader_feature_local _VRCLV_MODE_NONE _VRCLV_MODE_VERTEX
+            #include "./Vertex Lit.cginc"
             ENDCG
         }
         Pass
         {
             Tags { "LightMode" = "ForwardAdd" }
-
-            // additive blending
-            Blend One One
+            
+            Blend One One // additive blending
 
             CGPROGRAM
-
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma multi_compile_fwdadd_fullshadows
+            #pragma vertex VertexProgram
+            #pragma fragment FragmentProgram
+            #pragma multi_compile_fog
+            #pragma multi_compile_fwdadd
             #pragma multi_compile_instancing
-
-            #include "UnityCG.cginc"
-            #include "AutoLight.cginc"
-
-            uniform float4 _LightColor0;
-
-            uniform float4 _Color;
-            uniform float4 _SpecColor;
-            uniform float _Shininess;
-            UNITY_DECLARE_TEX2D(_MainTex);
-            float4 _MainTex_ST;
-
-            struct vertexInput
-            {
-                float4 vertex : POSITION;
-                float2 texcoord : TEXCOORD0;
-                float3 normal : NORMAL;
-                UNITY_VERTEX_INPUT_INSTANCE_ID
-            };
-
-            struct vertexOutput
-            {
-                float4 pos : SV_POSITION;
-                float2 texcoord : TEXCOORD0;
-                float3 diffuseLight : TEXCOORD1;
-                float4 specularReflection : COLOR;
-                SHADOW_COORDS(2)
-                UNITY_FOG_COORDS(3)
-                UNITY_VERTEX_OUTPUT_STEREO
-            };
-
-            vertexOutput vert(vertexInput v)
-            {
-                vertexOutput output;
-                UNITY_SETUP_INSTANCE_ID(v);
-                UNITY_INITIALIZE_OUTPUT(vertexOutput, output);
-                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
-                float4x4 modelMatrix = unity_ObjectToWorld;
-                float3x3 modelMatrixInverse = unity_WorldToObject;
-                float3 normalDirection = normalize(mul(v.normal, modelMatrixInverse));
-                float3 viewDirection = normalize(_WorldSpaceCameraPos - mul(modelMatrix, v.vertex).xyz);
-                float3 lightDirection;
-                float attenuation;
-
-                if (0.0 == _WorldSpaceLightPos0.w)
-                {
-                    // directional light?
-                    attenuation = 1.0; // no attenuation
-                    lightDirection = normalize(_WorldSpaceLightPos0.xyz);
-                }
-                else
-                {
-                    // point or spot light
-                    float3 vertexToLightSource = _WorldSpaceLightPos0.xyz - mul(modelMatrix, v.vertex).xyz;
-                    float distance = length(vertexToLightSource);
-                    attenuation = 1.0 / distance; // linear attenuation 
-                    lightDirection = normalize(vertexToLightSource);
-                }
-
-                float3 diffuseReflection = attenuation * _LightColor0.rgb * max(0.0, dot(normalDirection, lightDirection));
-
-                float3 specularReflection;
-                if (dot(normalDirection, lightDirection) < 0.0)
-                {
-                    // light source on the wrong side?
-                    specularReflection = float3(0.0, 0.0, 0.0);
-                }
-                else
-                {
-                    // light source on the right side
-                    specularReflection = attenuation * _LightColor0.rgb * _SpecColor.rgb * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), _Shininess);
-                }
-
-                output.diffuseLight = diffuseReflection;
-                output.specularReflection = float4(specularReflection, 1.0);
-                // no ambient contribution in this pass
-                output.pos = UnityObjectToClipPos(v.vertex);
-                output.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
-
-                TRANSFER_SHADOW(output)
-                UNITY_TRANSFER_FOG(output, output.pos);
-
-                return output;
-            }
-
-            float4 frag(vertexOutput input) : COLOR
-            {
-                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-
-                float3 albedo = _Color.rgb * UNITY_SAMPLE_TEX2D(_MainTex, input.texcoord).rgb;
-
-                fixed shadow = SHADOW_ATTENUATION(input);
-                input.diffuseLight *= shadow;
-                input.specularReflection *= shadow;
-
-                fixed4 col = fixed4(albedo * input.diffuseLight + input.specularReflection, 1.0);
-
-                UNITY_APPLY_FOG_COLOR(input.fogCoord, col, fixed4(0, 0, 0, 0));
-
-                return col;
-            }
-
+            #pragma shader_feature_local AFFINE_MAPPING_ON
+            #pragma shader_feature_local ALPHA_TEST_ON
+            #pragma shader_feature_local DETAIL_MAP_ON
+            #pragma shader_feature_local DITHER_ON
+            #pragma shader_feature_local PIXEL_SHARPEN_ON
+            #pragma shader_feature_local POLYGON_JITTER_ON
+            #pragma shader_feature_local USE_GAMMA_SPACE
+            #pragma shader_feature_local UV_TILE_DISCARD_ON
+            #include "./Vertex Lit.cginc"
             ENDCG
         }
         Pass
@@ -326,7 +153,8 @@ Shader "OSP Minimal/Vertex Lit"
             Name "ShadowCaster"
             Tags { "LightMode" = "ShadowCaster" }
 
-            ZWrite On ZTest LEqual
+            ZTest LEqual
+            ZWrite On
 
             CGPROGRAM
             #pragma vertex vert
@@ -345,20 +173,10 @@ Shader "OSP Minimal/Vertex Lit"
             Tags { "LightMode" = "Meta" }
             Cull Off
             CGPROGRAM
-
-            #include "UnityStandardMeta.cginc"
-
-            float4 frag_meta2(v2f_meta i) : SV_Target
-            {
-                UnityMetaInput o;
-                UNITY_INITIALIZE_OUTPUT(UnityMetaInput, o);
-                o.Albedo = tex2D(_MainTex, i.uv) * _Color;
-                o.SpecularColor = _SpecColor.xyz;
-                return UnityMetaFragment(o);
-            }
-
-            #pragma vertex vert_meta
-            #pragma fragment frag_meta2
+            #pragma vertex VertexMeta
+            #pragma fragment FragmentMeta
+            #pragma shader_feature EDITOR_VISUALIZATION
+            #include "./Vertex Lit Meta.cginc"
             ENDCG
         }
     }

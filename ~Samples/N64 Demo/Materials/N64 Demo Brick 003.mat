@@ -7,12 +7,11 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: N64 Demo Statue
+  m_Name: N64 Demo Brick 003
   m_Shader: {fileID: 4800000, guid: 30144f43fe7c08e44aa4e75793a75c1d, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - USE_GAMMA_SPACE
   - _VRCLV_MODE_NONE
   m_InvalidKeywords:
   - _VERTEXCOLORMODE_NONE
@@ -55,7 +54,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: bffcdf29cfe7f124a992fb741923a7b2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -70,9 +69,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _AffineDistortion: 0.5
+    - _AmbientOn: 0
     - _BlendDst: 10
     - _BlendOp: 0
     - _BlendSrc: 5
@@ -84,6 +88,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DetailTextureBlendMode: 0
     - _DetailUvSet: 0
+    - _DiffuseBoost: 1
     - _DitherColorDepth: 32
     - _DitherScale: 2
     - _DitherUvSet: 0
@@ -91,8 +96,9 @@ Material:
     - _FinalLightingMinBrightness: 0
     - _FinalLightingMultiplier: 1
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0.851
     - _GlossyReflections: 1
+    - _LightBoost: 3
     - _LightingBlend: 1
     - _Metallic: 0
     - _Mode: 0
@@ -121,7 +127,7 @@ Material:
     - _UseDetailMap: 0
     - _UseDither: 0
     - _UseFixedLight: 0
-    - _UseGammaSpace: 1
+    - _UseGammaSpace: 0
     - _UsePixelSharpen: 0
     - _UsePolygonJitter: 0
     - _UseUvTileDiscard: 0
@@ -131,11 +137,11 @@ Material:
     - _ZTest: 4
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DetailMapTint: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FixedAmbientColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    - _FixedLightColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FixedLightColor: {r: 0.8867924, g: 0.8867924, b: 0.8867924, a: 1}
     - _FixedLightDirection: {r: -0.6929, g: -0.6929, b: -0.6929, a: 0}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _UvTileDiscardRow0: {r: 0, g: 0, b: 0, a: 0}
